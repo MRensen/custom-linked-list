@@ -39,4 +39,13 @@ public class Node<T> {
             return 1 + next.size();
         }
     }
+
+    public T set(T t) {
+        this.value = t;
+        return value;
+    }
+
+//    public T add(int index, T t) {
+//
+//    }
 }

@@ -16,6 +16,11 @@ public class LinkedList<T> implements List<T> {
 
     }
 
+    private LinkedList(Node<T> start, Node<T> end) {
+        this.node = start;
+        end.next = null;
+    }
+
     @Override
     public int size() {
         // iteratieve implementatie:
@@ -39,6 +44,7 @@ public class LinkedList<T> implements List<T> {
 //        }
     }
 
+    //Als er geen Node is, dan is de lijst leeg.
     @Override
     public boolean isEmpty() {
         return node == null;
@@ -57,12 +63,31 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public Object[] toArray() {
-        return new Object[0];
+        int i = 0;
+        Object[] array = new Object[node.size()];
+        //Een magische loop die loopt door de nodes.
+        //Weet je nog wat de definitie van een for loop is? for(startpunt; wanneer de loop stopt; hoe de loop verder gaat)
+        for(Node<T> n = node; n != null; n = n.next){
+            array[i] = n.value;
+            i++;
+        }
+        return array;
     }
 
+    //Deze methode maakt gebruik van de generic T1 ipv T.
+    //Dat zijn twee verschillende variabalen, dus daar zullen we rekening mee moeten houden (ik heb hiervoor gespiekt bij de util.LinkedList implementatie)
     @Override
     public <T1> T1[] toArray(T1[] a) {
-        return null;
+        int i = 0;
+        Object[] myArray = a; //We maken hier een object array, zodat we daarin de values kunnen zeten
+        //Een magische loop die loopt door de nodes.
+        //Weet je nog wat de definitie van een for loop is? for(startpunt; wanneer de loop stopt; hoe de loop verder gaat)
+        for(Node<T> n = node; n != null; n = n.next){
+            myArray[i] = n.value;
+            i++;
+        }
+        //Uiteindelijk wordt a weer gereturned en niet myArray, omdat a van type T1 is en myArray niet. De methode definitie zegt dat we een array van type T1 moeten returnen
+        return a;
     }
 
     // Als er nog geen node is, dan wordt hier de eerste node gevuld
@@ -104,24 +129,46 @@ public class LinkedList<T> implements List<T> {
         }
     }
 
+    //Hier maken we simpelweg een for-loop waarin we de contains methode aanroepen voor elk item in de collectie van de parameter
     @Override
     public boolean containsAll(Collection<?> c) {
-        return false;
+        for(Object o : c){
+            if(!this.contains(o)){
+                return false;
+            }
+        }
+        return true;
     }
 
+    //Hier maken we een for loop waarin we de add methode aanroepen
     @Override
     public boolean addAll(Collection<? extends T> c) {
-        return false;
+        for(T t : c){
+            this.add(t);
+        }
+        return true;
     }
 
     @Override
     public boolean addAll(int index, Collection<? extends T> c) {
-        return false;
+        int i = index;
+        for(T t : c){
+            add(i, t);
+            i++;
+        }
+        return true;
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        return false;
+        boolean allSucces = true;
+        for(Object o : c){
+            //Met dit if statment voer je sowieso de remove uit, maar als het false is, dan doe zet je ook de allSucces op false. Waarmee je aangeeft dat niet alles succesvol kon worden verwijderd.
+            if(!this.remove(o)) {
+                allSucces = false;
+            }
+        }
+        return allSucces;
     }
 
     @Override
@@ -144,14 +191,32 @@ public class LinkedList<T> implements List<T> {
         return node.get(index);
     }
 
+    //Het verschil tussen set(index, element) en add(index, element) is dat set de waarde op de index positie vervangt en add de waarde op de index positie toeveogd en dus alles wat erachter komt opschuift.
     @Override
     public T set(int index, T element) {
-        return null;
+        int i = index;
+        Node<T> parent;
+        Node<T> current = node;
+        while(i>0){ //itereer door de nodes, tot je bij de juiste index bent
+            parent = current;
+            current = current.next;
+        }
+        //Doe dan add(element)
+        return current.set(element);
+
     }
 
     @Override
     public void add(int index, T element) {
-
+        int i = index;
+        Node<T> parent;
+        Node<T> current = node;
+        while(i>0){ //itereer door de nodes, tot je bij de juiste index bent
+            parent = current;
+            current = current.next;
+        }
+        //Doe dan set(element)
+        current.add(element);
     }
 
     @Override
@@ -199,14 +264,24 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public int lastIndexOf(Object o) {
-        return 0;
+        int index = 0;
+        for(Node<T> n = node; n != null; n = n.next){
+            if(n.value.equals(o)){
+                return index;
+            } else {
+                index++;
+            }
+        }
+        return -1; //niet gevonden
     }
 
+    //niet geimplementeerd
     @Override
     public ListIterator<T> listIterator() {
         return null;
     }
 
+    //niet geimplementeerd
     @Override
     public ListIterator<T> listIterator(int index) {
         return null;
@@ -214,6 +289,20 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public List<T> subList(int fromIndex, int toIndex) {
-        return null;
+        Node<T> start = node;
+        Node<T> startCont;
+        Node<T> end = node;
+        for(int i = fromIndex; i > 0; i--){
+            start = node.next;
+        }
+
+        //Hier maken we een kopie van de Nodes tussen fromIndex en toIndex en returnen die kopie uiteindelijk als de sublist
+        end = start;
+        startCont = start;
+        for(int i = fromIndex; i < toIndex; i++){
+            startCont = startCont.next;
+            end.next = new Node<>(null, startCont.value);
+        }
+        return new LinkedList<T>(start, end);
     }
 }
