@@ -18,17 +18,36 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public int size() {
-        return 0;
+        // iteratieve implementatie:
+        int counter = 0;
+        //Als node null is, dan is de list leeg. -> return 0
+        if(node != null) {
+            counter++; //Als de node niet null is, dan is de lijst minstens 1 lang -> ++
+            Node next = node.next;
+            while (next != null) { //Kijk vervolgens net zo vaak naar de volgende node van de volgende node, totdat er geen volgende node meer is. Elke keer verhoog je de counter met 1.
+                next = next.next;
+                counter++;
+            }
+        }
+        return counter;
+
+//        // recursieve oplossing
+//        if(node != null) {
+//            return node.size();
+//        } else {
+//            return 0;
+//        }
     }
 
     @Override
     public boolean isEmpty() {
-        return false;
+        return node == null;
     }
 
     @Override
     public boolean contains(Object o) {
-        return false;
+        // Deze heb ik moeten afkijken bij de java.util implementatie.
+        return indexOf(o) >= 0;
     }
 
     @Override
@@ -60,7 +79,29 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public boolean remove(Object o) {
-        return false;
+        //We loopen door de nodes heen, waarbij we de huidige en de vorige Node bijhouden.
+        Node<T> toRemove = node;
+        Node<T> previous = null;
+
+        //We maken hier een while(true) loop, wat gevaarlijk is, dus daar moeten we heel bewust mee omgaan.
+        while(true){
+            //Dit eerste if-statement zorgt er voor dat we niet oneindig blijven loopen.
+            if(toRemove == null){
+                return false;
+            }
+            //Als het object uit de parameter is gevonden als value van de Node, dan willen we die Node verwijderen
+            if(toRemove.value.equals(o)){
+                if(previous == null){
+                    node = node.next;
+                    return true;
+                }
+                previous.next = toRemove.next; // zorg dat de next van de vorige wijst naar de next van de huidige. Daarmee haal je effectief de huidige Node tussen de lijst uit en is het verwijderd. (het maakt niet uit of de volgende node null is)
+                return true;
+            }
+            //Als het object uit de parameter niet gevonden is, dan kijken we of het in de volgende Node wel gevonden wordt. (tot
+            previous = toRemove;
+            toRemove = toRemove.next;
+        }
     }
 
     @Override
@@ -90,7 +131,7 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public void clear() {
-
+        node = null;
     }
 
     //Als er geen node is, kun je daar ook niet de get methode van aanroepen. Daarom returnen we dan null
@@ -115,12 +156,45 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public T remove(int index) {
-        return null;
+        Node<T> target = node;
+        Node<T> previous = null;
+        for(int i = index; i>0; i--){
+            previous = target;
+            target = target.next;
+        }
+        // verzamel eerst de informatie die bewaard moet blijven, voor je het verwijderd.
+        T valueToReturn = target.value; //Deze moet uiteindelijk returned worden
+        Node<T> nodeToDelete = target; //Deze gaan we verwijderen.
+        previous.next = target.next; //Maar voordat we het verwijderen, moeten we eerst een de link door trekken naar de volgende (het maakt niet uit of dat null is).
+
+        // nodeToDelete.delete() //We hoeven deze Node niet expliciet te verwijderen.
+        // Als we zorgen dat deze instance niet meer gebruikt wordt en er niet meer naar gelinkt wordt, dan zal de JVM het zelfstandig opruimen met de "garbage collector"
+
+        return valueToReturn;
     }
 
     @Override
     public int indexOf(Object o) {
-        return 0;
+        if(node != null) {
+            int index = 0; //Hier houden we bij welke indexen we al gehad hebben.
+
+            if (o.equals(node.value)) {
+                return index;
+            } else {
+                Node<T> next = node.next;
+                while (next != null){
+                    index++;
+                    if(next.value.equals(0)){
+                        return index;
+                    }
+                    next = next.next;
+                }
+                return index;
+
+            }
+        }
+        //Wanneer het object neit gevonden wordt, returnen we -1. Dit is conventie. Zie ook ArrayList.indexOf
+        return -1;
     }
 
     @Override
