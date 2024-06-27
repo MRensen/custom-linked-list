@@ -16,9 +16,8 @@ public class LinkedList<T> implements List<T> {
 
     }
 
-    private LinkedList(Node<T> start, Node<T> end) {
+    private LinkedList(Node<T> start) {
         this.node = start;
-        end.next = null;
     }
 
     @Override
@@ -56,6 +55,7 @@ public class LinkedList<T> implements List<T> {
         return indexOf(o) >= 0;
     }
 
+    //Niet geimplementeerd
     @Override
     public Iterator<T> iterator() {
         return null;
@@ -249,12 +249,12 @@ public class LinkedList<T> implements List<T> {
                 Node<T> next = node.next;
                 while (next != null){
                     index++;
-                    if(next.value.equals(0)){
+                    if(next.value.equals(o)){
                         return index;
                     }
                     next = next.next;
                 }
-                return index;
+                return -1;
 
             }
         }
@@ -265,14 +265,16 @@ public class LinkedList<T> implements List<T> {
     @Override
     public int lastIndexOf(Object o) {
         int index = 0;
+        int indexFound = -1; //Initieer de gevonden index als -1, voor het geval er niks gevonden wordt.
         for(Node<T> n = node; n != null; n = n.next){
             if(n.value.equals(o)){
-                return index;
+                //Elke keer als je het object vind, overschrijf je de gevonden index met de huidige index.
+                indexFound = index++;
             } else {
                 index++;
             }
         }
-        return -1; //niet gevonden
+        return indexFound; //returnt de laatst gevonden index, of -1 als er niks gevonden is.
     }
 
     //niet geimplementeerd
@@ -289,20 +291,48 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public List<T> subList(int fromIndex, int toIndex) {
+        //Hier houden we de nodes bij. Een start node, de end node, en het begin van de nieuwe sublist node.
         Node<T> start = node;
         Node<T> startCont;
-        Node<T> end = node;
+        Node<T> end;
+
+        if(node == null){
+            return new LinkedList<>();
+        }
+
+        //Als eerst gaan we de start node op het begin van de sublist zetten.
         for(int i = fromIndex; i > 0; i--){
-            start = node.next;
+            start = start.next;
         }
 
         //Hier maken we een kopie van de Nodes tussen fromIndex en toIndex en returnen die kopie uiteindelijk als de sublist
-        end = start;
-        startCont = start;
-        for(int i = fromIndex; i < toIndex; i++){
-            startCont = startCont.next;
-            end.next = new Node<>(null, startCont.value);
+        //Daarbij beginnen we bij de reeds gevonden start node en gaan we door tot we bij de toIndex zijn
+        startCont = new Node<>(null, start.value);
+        end = startCont;
+        for(int i = fromIndex; i < toIndex-1; i++){ // toIndex -1, omdat het exclusief de toIndex is en inclusief de from Index is, volgens de documentatie.
+            if(start.next != null) {
+                start = start.next;
+                startCont.next = new Node<>(null, start.value);
+                startCont = startCont.next;
+            }
+
+
+            }
+
+        return new LinkedList<T>(end);
+    }
+
+    //Als extra nog deze toString, om makkelijk de lijst te printen
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("[");
+        if(node == null){
+            return "[]";
         }
-        return new LinkedList<T>(start, end);
+        for(Node<T> n = node; n != null; n = n.next) {
+            sb.append(n.value + ", ");
+        }
+        sb.append("]");
+        return sb.toString();
     }
 }
