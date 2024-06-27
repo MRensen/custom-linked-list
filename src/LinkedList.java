@@ -6,9 +6,16 @@ import java.util.ListIterator;
 
 //We implementeren hier de List interface
 //Tot nu toe zijn alleen de add() en de get() methodes geimplementeerd, de rest returned nog 0, false of null
-//Voel je vrij om de isEmpty(), size(), contains(), remove() en set() zelf te implementeren. Ik zie graag jou uitwerking tegemoet.
-//De andere methoden mag je natuurlijk ook implementeren, maar die zijn nog wat lastiger.
-//De Iterator en ListIterator methodes mag je laten voor wat het is. Kort gezegd zijn dat alternatieven voor een for-loop.
+
+//Voel je vrij om de isEmpty(), clear(), size(), remove(), addAll(), removeAll() en set() zelf te implementeren. Ik zie graag jou uitwerking tegemoet.
+//De andere methoden mag je natuurlijk ook implementeren, maar die zijn erg moeilijk. (alsof het nog niet lastig moeilijk was...)
+//Ik heb er regelmatig voor moeten spieken bij de java.util.LinkedList implementatie en de java.util.List documentatie (groene comments).
+
+//De Iterator en ListIterator methodes mag je uberhaupt laten voor wat het is. Kort gezegd zijn dat alternatieven voor een for-loop.
+//Maar we zijn met deze oefening al ver genoeg buiten de scope van de cursus gegaan.
+
+//Mijn uitwerkingen kun je vinden in de "full-implementation" branch
+
 public class LinkedList<T> implements List<T> {
     private Node<T> node;
 
